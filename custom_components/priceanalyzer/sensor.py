@@ -30,7 +30,8 @@ from .const import (
     API_DATA_LOADED,
     DOMAIN,
     DATA,
-    _PRICE_IN
+    _PRICE_IN,
+    SWITCH_NAME
 )
 
 # Needed incase a user wants the prices in non local currency
@@ -97,6 +98,10 @@ class VVBSensor(SensorEntity):
         self._attr_force_update = True
 
     def getTemp(self, current_hour, is_tomorrow = False, reason = False):
+        switch_state = self._hass.states.get(f"switch.{SWITCH_NAME}")
+        if switch_state and switch_state.state == "off":
+            return self.getConfigKey(TEMP_DEFAULT)
+
         temp = self.getConfigKey(TEMP_DEFAULT)
         if not isinstance(temp, (int, float)):
             if isinstance(temp, (str)) and (temp == 'on' or temp == 'off'):
@@ -346,6 +351,10 @@ class PriceAnalyzerSensor(SensorEntity):
 
     @property
     def state(self) -> float:
+        switch_state = self._hass.states.get(f"switch.{SWITCH_NAME}")
+        if switch_state and switch_state.state == "off":
+            return 0
+
         if self._data.current_hour:
             return self._data.current_hour['temperature_correction']
         else:

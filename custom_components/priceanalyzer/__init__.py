@@ -52,7 +52,10 @@ from .const import (
     DEFAULT_REGION,
     DEFAULT_NAME,
     DEFAULT_TEMPLATE,
-    PLATFORM_SCHEMA
+    PLATFORM_SCHEMA,
+    SWITCH_NAME,
+    SWITCH_DEFAULT_STATE,
+    SWITCH_DOMAIN
     )
 
 EVENT_NEW_DAY = "nordpool_update_day"
@@ -300,6 +303,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     #hass.config_entries.async_setup_platforms(entry, PLATFORMS)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.add_update_listener(async_reload_entry)
+    await async_setup_switch(hass, entry)
     return res
 
 # async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry, options):
@@ -332,3 +336,10 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
+
+async def async_setup_switch(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Set up the switch entity."""
+    switch = hass.data[DOMAIN].get(SWITCH_NAME)
+    if switch is None:
+        switch = hass.data[DOMAIN][SWITCH_NAME] = SWITCH_DEFAULT_STATE
+    hass.states.async_set(f"{SWITCH_DOMAIN}.{SWITCH_NAME}", switch)
