@@ -1,4 +1,3 @@
-
 import logging
 import json
 
@@ -132,3 +131,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(HOT_WATER_CONFIG, default=HOT_WATER_DEFAULT_CONFIG_JSON): cv.string,
     }
 )
+
+SWITCH_NAME = "priceanalyzer_switch"
+SWITCH_DEFAULT_STATE = True
+SWITCH_DOMAIN = "switch"
