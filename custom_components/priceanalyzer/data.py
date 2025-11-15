@@ -104,6 +104,7 @@ class Data():
         self._diff = None
         self._ten_cheapest_today = None
         self._five_cheapest_today = None
+        self._two_cheapest_today = None
         self.small_price_difference_today = None
         self.small_price_difference_tomorrow = None
         self._cheapest_hours_in_future_sorted = []
@@ -119,6 +120,7 @@ class Data():
         self._diff_tomorrow = None
         self._ten_cheapest_tomorrow = None
         self._five_cheapest_tomorrow = None
+        self._two_cheapest_tomorrow = None
 
         # Check incase the sensor was setup using config flow.
         # This blow up if the template isnt valid.
@@ -663,6 +665,7 @@ class Data():
             sorted = self.get_sorted_prices_for_day(False)
             self._ten_cheapest_today = sorted[:10] if sorted else []
             self._five_cheapest_today = sorted[:5:] if sorted else []
+            self._two_cheapest_today = sorted[:2] if sorted else []
 
     def _set_cheapest_hours_tomorrow(self):
         if self._data_tomorrow != None and len(self._data_tomorrow.get("values")):
@@ -671,6 +674,7 @@ class Data():
 
             self._ten_cheapest_tomorrow = sorted[:10] if sorted else []
             self._five_cheapest_tomorrow = sorted[:5] if sorted else []
+            self._two_cheapest_tomorrow = sorted[:2] if sorted else []
 
     def _add_raw_calculated(self, is_tomorrow):
         if is_tomorrow and self.tomorrow_valid == False:
@@ -764,6 +768,7 @@ class Data():
             item['is_ten_cheapest'] = self._is_ten_cheapest(item, is_tomorrow)
             item['is_five_cheapest'] = self._is_five_cheapest(
                 item, is_tomorrow)
+            item['is_two_cheapest'] = self._is_two_cheapest(item, is_tomorrow)
             item['is_five_most_expensive'] = is_five_most_expensive
             item['is_falling_a_lot_next_hour'] = self._is_falling_alot_next_hour(
                 item)
@@ -815,6 +820,15 @@ class Data():
             return False
 
         if any(obj['start'] == item['start'] for obj in five_cheapest):
+            return True
+        return False
+
+    def _is_two_cheapest(self, item, is_tomorrow):
+        two_cheapest = self._two_cheapest_tomorrow if is_tomorrow else self._two_cheapest_today
+        if two_cheapest == None:
+            return False
+
+        if any(obj['start'] == item['start'] for obj in two_cheapest):
             return True
         return False
 
@@ -1002,6 +1016,7 @@ class Data():
                 self._diff = self._diff_tomorrow
                 self._ten_cheapest_today = self._ten_cheapest_tomorrow
                 self._five_cheapest_today = self._five_cheapest_tomorrow
+                self._two_cheapest_today = self._two_cheapest_tomorrow
 
                 self._update(self._data_today)
                 self._data_tomorrow = None
