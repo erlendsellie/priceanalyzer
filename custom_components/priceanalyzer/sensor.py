@@ -23,8 +23,11 @@ from .const import (
     TEMP_LOW_PRICE,
     TEMP_NOT_CHEAP_NOT_EXPENSIVE,
     TEMP_MINIMUM,
+    HOT_WATER_CONFIG,
+    HOT_WATER_DEFAULT_CONFIG,
     EVENT_NEW_DATA,
     EVENT_NEW_HOUR,
+    EVENT_CHECKED_STUFF,
     API_DATA_LOADED,
     DOMAIN,
     DATA,
@@ -338,8 +341,10 @@ class PriceAnalyzerSensor(SensorEntity):
         "raw_tomorrow", 
         "ten_cheapest_today",
         "five_cheapest_today",
+        "two_cheapest_today",
         "ten_cheapest_tomorrow",
         "five_cheapest_tomorrow",
+        "two_cheapest_tomorrow",
         "current_hour"
     })
 

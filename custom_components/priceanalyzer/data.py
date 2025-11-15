@@ -905,8 +905,8 @@ class Data():
         if len(hours.get("values")):
             formatted_prices = [
                 {
-                    'start': i.get('start'),
-                    'end': i.get('end'),
+                    'start': dt_utils.as_local(i.get('start')),
+                    'end': dt_utils.as_local(i.get('end')),
                     'value': self._calc_price(
                         i.get("value"), fake_dt=dt_utils.as_local(i.get("start"))
                     )
