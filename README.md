@@ -1,126 +1,247 @@
-# Price Analyzer based on Nordpool Prices for Home Assistant
-Shamelessly based on a fork from the wonderful https://github.com/custom-components/nordpool
+# PriceAnalyzer - Smart Energy Management for Home Assistant
 
-If you like this, you can [buy me a beer](http://paypal.me/erlendsellie) or a [Ko-fi](https://ko-fi.com/erlendsellie).
+An intelligent Home Assistant integration that optimizes your energy consumption based on Nordpool electricity prices. Automatically control thermostats and hot water heaters to minimize costs while maintaining comfort.
 
-If you like being in control of your electricity usage, sign up for Tibber using my my referral link, and get 50 EUR off smart home gadgets in their store:
-[https://invite.tibber.com/yuxfw0uu](https://invite.tibber.com/yuxfw0uu)
+Originally based on the excellent [nordpool custom component](https://github.com/custom-components/nordpool).
 
-If you are thinking about buying a Tesla, you can get some discount or goodies by using my referral link; [https://ts.la/erlend56568](https://ts.la/erlend56568).
+![PriceAnalyzer Screenshot](https://user-images.githubusercontent.com/18458417/197388506-d623cb01-141d-4e44-b384-5a3aa21975a0.png)
 
-PriceAnalyzer keeps your energy bill down, by analyzing the prices from Nordpool, and provides you sensors to automatically control your climate entities and hot water heater.
+## What does it do?
 
-![image](https://user-images.githubusercontent.com/18458417/197388506-d623cb01-141d-4e44-b384-5a3aa21975a0.png)
+PriceAnalyzer analyzes hourly (or 15-minute) electricity prices from Nordpool and provides smart sensors that help you:
+- **Save money** by shifting energy consumption to cheaper hours
+- **Optimize comfort** by preheating during low-price periods
+- **Reduce environmental impact** by using electricity when it's greenest (often correlates with price)
 
-See the Wiki for more examples and usage instructions. 
+### Support the Project
 
+If you find this useful:
+- [Buy me a beer](http://paypal.me/erlendsellie) or a [Ko-fi](https://ko-fi.com/erlendsellie)
+- Support on [Patreon](https://www.patreon.com/erlendsellie) [![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/erlendsellie)
+- Get [50 EUR off Tibber smart home gadgets](https://invite.tibber.com/yuxfw0uu) (referral link)
+- Thinking about a Tesla? Get discounts using my [referral link](https://ts.la/erlend56568)
 
-## PriceAnalyzerSensor
-Price Analyzer creates sensor a with the recommended temperature correction for your thermostats, based on todays and tomorrows prices, between 1 and -1 degrees celcius.
-This is meant to work kind of like Tibbers smart control for thermostats. If the price is going up in an hour or two, it will boost the thermostat. If there is a peak, or the price is falling soon, the thermostat will 'cool down a bit' to save power. 
+---
 
-The sensor looks a lot like the nordpool-sensor, with a list of todays and tomorrows prices, but also includes info about the hour like:
-- if the price is gaining later
-- if the price is falling later
-- the next hours price
-- if the price for that hour is over peak price.
-- if the price for that hour is over off peak 1 price.
-- If the price is the lowest price in the foreseeable future
+## Features
 
-## Hot water Heater sensor
-A sensor for the recommended thermostat setting for your smartified hot water heater with temperature monitoring.
-This sensor will calculate when to heat the tank to max, and when to just keep the tank 'hot enough', based on todays and tomorrows prices.
-You can provide your own temperatures for the sensor when setting up or editing the PriceAnalyzer integration. The default config is as follows:
+### 🌡️ Climate Control Sensor (PriceAnalyzerSensor)
+Provides intelligent temperature correction recommendations (±1°C) for your thermostats based on current and upcoming electricity prices.
 
-```
-{
-	"default_temp": 75,
-	"five_most_expensive": 40,
-	"is_falling": 50,
-	"five_cheapest": 70,
-	"ten_cheapest": 65,
-	"low_price": 60,
-	"not_cheap_not_expensive": 50,
-	"min_price_for_day": 75
-}
-```
-The default config may not suit your hot water heater and use-case, and will depend on how frequent your household take showers, how big the tank is, and where the temperature sensor(s) are placed. This config has worked great for me, have never given me a cold shower.
+**How it works:**
+- **Pre-heating**: Increases temperature when prices are about to rise
+- **Energy saving**: Reduces temperature during price peaks or when prices are falling
+- **Smart timing**: Looks ahead at the next few hours to optimize comfort and cost
 
-The config can also be configured as binary on/off, if you don't have a temperature sensor on your water heater, like this: 
+**Sensor attributes include:**
+- `is_ten_cheapest` / `is_five_cheapest` / `is_two_cheapest` - Boolean flags for cheapest hours
+- `ten_cheapest_today` / `five_cheapest_today` / `two_cheapest_today` - Lists of cheapest hours
+- `is_gaining` / `is_falling` - Price trend indicators
+- `is_over_peak` / `is_over_average` - Price level indicators
+- `temperature_correction` - Recommended adjustment for your thermostat
+- Full price data for today and tomorrow
 
-```
-{
-	"default_temp": "on",
-	"five_most_expensive": "off",
-	"is_falling": "off",
-	"five_cheapest": "on",
-	"ten_cheapest": "on",
-	"low_price": "on",
-	"not_cheap_not_expensive": "on",
-	"min_price_for_day": "on"
-}
-```
-Keep in mind that without temperature sensors on the heater, a cold shower can occur.
+### 💧 Hot Water Heater Sensor (VVBSensor)
+Calculates optimal water heater temperatures based on electricity prices to ensure you always have hot water while minimizing costs.
 
-## How to / Documentation
+**Default temperature strategy:**
+- **75°C** - Default and minimum price hours (always hot water)
+- **70°C** - Five cheapest hours
+- **65°C** - Ten cheapest hours  
+- **60°C** - Low price hours
+- **50°C** - Normal hours and falling prices
+- **40°C** - Five most expensive hours (minimum safe temperature)
 
-See the Wiki!
-https://github.com/erlendsellie/priceanalyzer/wiki
+You can customize all these temperatures in the integration settings to match your hot water heater capacity, insulation, and household usage patterns.
+
+**Binary mode:** Can also be configured as simple ON/OFF if you don't have temperature control.
+
+### 💰 Price Sensor (PriceSensor)
+Displays the current electricity price with your configured additional costs (grid fees, taxes, etc.) applied.
+
+---
 
 ## Installation
 
-### HACS
+### Via HACS (Recommended)
 
-Under HACS -> Integrations, select the 'Three dots' icon in the top right corner, select 'Custom Repository', and add 'https://github.com/erlendsellie/priceanalyzer/' as an integration (category).
-It will searchable as 'priceanalyzer'. Click it, and select 'Download this repository with Hacs'.
-Then restart Home Assistant, and go to the integrations page to configure it.
-It will then create a new sensor, sensor.priceanalyzer in your installation.
+1. Open HACS in your Home Assistant
+2. Click the three dots (⋮) in the top right corner
+3. Select **Custom repositories**
+4. Add this repository URL: `https://github.com/erlendsellie/priceanalyzer/`
+5. Select **Integration** as the category
+6. Click **Add**
+7. Search for "PriceAnalyzer" and click **Download**
+8. **Restart Home Assistant**
+9. Go to **Settings** → **Devices & Services** → **Add Integration** → Search for "PriceAnalyzer"
 
+### Manual Installation
 
-Takes the same input as the nordpool component, except for:
-- Percent difference between Min and Max for the day before bothering
-- Settings for custom degrees for Hot Water sensor
-- Minimum max price for the day before PriceAnalyzer Hot Water is active
+1. Copy the `custom_components/priceanalyzer` folder to your Home Assistant `config/custom_components/` directory
+2. Restart Home Assistant
+3. Go to **Settings** → **Devices & Services** → **Add Integration** → Search for "PriceAnalyzer"
 
+---
 
-## Upcoming / TODO:
-Pause / Abort: Add a switch entity to abort or pause PriceAnalyzer for the rest of the day, in case you see that it miscalculates, or that you want to override it. This can always be done by templating in HA, but it should be supported natively.
+## Configuration
 
+### Basic Setup
 
+When adding the integration through the UI, you'll configure:
 
-### How-to
+**Step 1: Basic Settings**
+- **Friendly name** (optional): Custom name to distinguish multiple setups
+- **Region**: Your Nordpool price area (e.g., NO1, NO2, SE3, DK1, etc.)
+- **Currency**: Your preferred currency (auto-detected based on region)
+- **Include VAT**: Whether to include VAT in prices
+- **Time resolution**: 
+  - `hourly` - Standard hourly prices (default)
+  - `quarterly` - 15-minute price intervals (for compatible regions)
 
-For the PriceAnalyzer / thermostat sensor:
-Create an Input Number, to use as a target temperature for the climate-entity/thermostat you want to control with priceanalyzer. 
-Follow this to create an input number:
+**Step 2: Price Settings**
+- **Price type**: Display as kWh, MWh, or Wh
+- **Show in cents**: Display prices in cents/øre instead of currency
+- **Low price cutoff**: Multiplier for determining "low price" (default: 1.0 = average price)
+- **Additional costs template**: Jinja2 template for grid fees, taxes, etc.
+  - Example: `{{0.50|float}}` adds 0.50 to the price
+  - Example: `{{current_price * 0.25}}` adds 25% markup
 
-[![Create Input Helper.](https://my.home-assistant.io/badges/helpers.svg)](https://my.home-assistant.io/redirect/helpers/)
+**Step 3: Advanced Settings**
+- **Multiply template**: Adjustment factor for temperature correction
+- **Hours to boost/save**: Look-ahead window for price trends
+- **Percent difference**: Minimum price variation threshold
+- **Price before active**: Minimum price to activate features
 
-Then, import this blueprint, and choose your newly created input number, the priceanalyzer sensor, and the climate entity you want to control.
+**Step 4: Hot Water Temperature Settings**
+Configure target temperatures for different price scenarios:
+- **Default temperature**: Normal operating temperature (default: 75°C)
+- **Five most expensive hours**: Minimum temperature during peaks (default: 40°C)
+- **Price falling**: Temperature when price is declining (default: 50°C)
+- **Five cheapest hours**: Maximum temperature for cheap hours (default: 70°C)
+- **Ten cheapest hours**: Temperature for top 10 cheap hours (default: 65°C)
+- **Low price hours**: Temperature below average price (default: 60°C)
+- **Normal hours**: Temperature for average prices (default: 50°C)
+- **Minimum price**: Temperature at lowest daily price (default: 75°C)
 
-[![Then, use this blueprint.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Ferlendsellie%2Fpriceanalyzer%2Fblob%2Fmaster%2Fblueprints%2Fautomation%2Fpriceanalyzer%2Fpriceanalyzer.yaml)
+**For binary control:** Use values like `1.0` (ON) and `0.0` (OFF) instead of temperatures.
 
-Now, whenever the price goes up or down, PriceAnalyzer will change the temperature based on the price.
+### Multiple Setups
 
+You can create multiple PriceAnalyzer integrations for the same region with different configurations. This is useful for:
+- Different additional costs calculations
+- Separate hot water heater configurations
+- Testing different strategies
+- Multiple households/installations
 
+Each setup is identified by its friendly name and creates its own set of sensors.
 
-Blueprint for the hot water heater sensor:
+### Reconfiguring
 
-[![Hot water heater sensor blueprint.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Ferlendsellie%2Fpriceanalyzer%2Fblob%2Fmaster%2Fblueprints%2Fautomation%2Fpriceanalyzer%2Fpriceanalyzer_vvb.yaml)
+To change settings after initial setup:
+1. Go to **Settings** → **Devices & Services**
+2. Find your PriceAnalyzer integration
+3. Click **Configure**
+4. Make your changes in the multi-step menu
 
+---
 
+## Usage
 
+### Automating Climate Control
 
-### Debug logging
+Use PriceAnalyzer to automatically adjust your thermostat based on electricity prices:
 
-Add this to your configuration.yaml to debug the component.
+**Step 1:** Create an Input Number helper to store your base temperature
+- Click here to create: [![Create Input Helper](https://my.home-assistant.io/badges/helpers.svg)](https://my.home-assistant.io/redirect/helpers/)
+- Name it something like "Living Room Base Temperature"
+- Set min/max values appropriate for your climate (e.g., 18-24°C)
 
+**Step 2:** Import the Climate Control Blueprint
+- Click here: [![Import Climate Control Blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Ferlendsellie%2Fpriceanalyzer%2Fblob%2Fmaster%2Fblueprints%2Fautomation%2Fpriceanalyzer%2Fpriceanalyzer.yaml)
+- Select your input number, PriceAnalyzer sensor, and climate entity
+- The automation will adjust your thermostat by ±1°C based on price trends
+
+**How it works:**
+- When prices are about to rise → Pre-heats your home
+- During price peaks → Reduces temperature slightly  
+- When prices are falling → Lowers temperature to save energy
+- Your base temperature remains in your input number for manual control
+
+### Automating Hot Water Heater
+
+Use PriceAnalyzer to optimize hot water heating costs:
+
+**Import the Hot Water Blueprint:**
+[![Import Hot Water Blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Ferlendsellie%2Fpriceanalyzer%2Fblob%2Fmaster%2Fblueprints%2Fautomation%2Fpriceanalyzer%2Fpriceanalyzer_vvb.yaml)
+
+- Select your VVBSensor and hot water heater thermostat/switch
+- The automation sets the appropriate temperature based on current price conditions
+- Ensures hot water availability while minimizing heating costs
+
+### Advanced Usage
+
+**Using cheapest hours attributes in automations:**
+```yaml
+# Example: Run dishwasher during cheapest hours
+automation:
+  - trigger:
+      - platform: template
+        value_template: >
+          {{ state_attr('sensor.priceanalyzer_no3', 'current_hour')['is_two_cheapest'] }}
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.dishwasher
 ```
+
+**Custom templates with additional costs:**
+The additional costs template receives `current_price` as a variable:
+```jinja
+# Add fixed grid fee + 25% tax
+{{ (current_price + 0.50) * 1.25 }}
+
+# Time-based additional costs
+{% if now().hour >= 6 and now().hour < 22 %}
+  {{ current_price + 0.40 }}  {# Day tariff #}
+{% else %}
+  {{ current_price + 0.20 }}  {# Night tariff #}
+{% endif %}
+```
+
+---
+
+## Troubleshooting
+
+### Enable Debug Logging
+
+If you're experiencing issues, enable debug logging to see detailed information:
+
+**Via UI (Recommended):**
+1. Go to **Settings** → **System** → **Logs**
+2. Click **Configure** for `custom_components.priceanalyzer`
+3. Set level to **Debug**
+
+**Via configuration.yaml:**
+```yaml
 logger:
   default: info
   logs:
-    nordpool: debug
     custom_components.priceanalyzer: debug
+    nordpool: debug  # For API communication issues
 ```
 
-[![](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/erlendsellie)
+### Getting Help
+
+- **Wiki**: https://github.com/erlendsellie/priceanalyzer/wiki
+- **Issues**: https://github.com/erlendsellie/priceanalyzer/issues
+- **Discussions**: Use GitHub Discussions for questions
+
+---
+
+## Credits
+
+Originally based on the excellent [nordpool](https://github.com/custom-components/nordpool) custom component.
+
+## License
+
+MIT License - See LICENSE file for details
