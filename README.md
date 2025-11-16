@@ -19,6 +19,7 @@ If you find this useful:
 - [Buy me a beer](http://paypal.me/erlendsellie) or a [Ko-fi](https://ko-fi.com/erlendsellie)
 - Support on [Patreon](https://www.patreon.com/erlendsellie) [![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/erlendsellie)
 - Get [50 EUR off Tibber smart home gadgets](https://invite.tibber.com/yuxfw0uu) (referral link)
+- Thinking about a Tesla? Get discounts using my [referral link](https://ts.la/erlend56568)
 
 ---
 
@@ -42,7 +43,6 @@ Provides intelligent temperature correction recommendations (±1°C) for your th
 
 ### 💧 Hot Water Heater Sensor (VVBSensor)
 Calculates optimal water heater temperatures based on electricity prices to ensure you always have hot water while minimizing costs.
-
 
 **Default temperature strategy:**
 - **75°C** - Default and minimum price hours (always hot water)
@@ -85,11 +85,9 @@ Displays the current electricity price with your configured additional costs (gr
 
 ## Configuration
 
-PriceAnalyzer uses a modern multi-step configuration flow through the Home Assistant UI - no YAML editing required!
-
 ### Basic Setup
 
-When adding the integration, you'll configure:
+When adding the integration through the UI, you'll configure:
 
 **Step 1: Basic Settings**
 - **Friendly name** (optional): Custom name to distinguish multiple setups
@@ -129,7 +127,7 @@ Configure target temperatures for different price scenarios:
 
 ### Multiple Setups
 
-You can create multiple PriceAnalyzer integrations for the same region with different configurations! This is useful for:
+You can create multiple PriceAnalyzer integrations for the same region with different configurations. This is useful for:
 - Different additional costs calculations
 - Separate hot water heater configurations
 - Testing different strategies
@@ -232,26 +230,6 @@ logger:
     nordpool: debug  # For API communication issues
 ```
 
-### Common Issues
-
-**"Region already set up" error:**
-- This is fixed in version 2.4.x+
-- You can now create multiple setups with the same region
-- Make sure you're running the latest version
-
-**Cheapest hours not detecting correctly:**
-- Fixed in version 2.4.6
-- Ensure timezone is correctly configured in Home Assistant
-
-**Price sensor shows wrong value:**
-- Check your "Additional costs" template in settings
-- Verify the template syntax is valid Jinja2
-
-**Hot water temperature not changing:**
-- Verify your automation is using the VVBSensor entity
-- Check that temperature thresholds are configured correctly
-- Ensure price difference threshold is not too high
-
 ### Getting Help
 
 - **Wiki**: https://github.com/erlendsellie/priceanalyzer/wiki
@@ -259,14 +237,6 @@ logger:
 - **Discussions**: Use GitHub Discussions for questions
 
 ---
-
-## Additional Resources
-
-### Referral Links
-
-If you're considering these services, using these referral links helps support development:
-- **Tibber**: Get [50 EUR off smart home gadgets](https://invite.tibber.com/yuxfw0uu) in their store
-- **Tesla**: Get discounts or goodies using my [Tesla referral link](https://ts.la/erlend56568)
 
 ## Credits
 
