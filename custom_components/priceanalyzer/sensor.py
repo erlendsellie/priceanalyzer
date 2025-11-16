@@ -12,8 +12,9 @@ from homeassistant.helpers.entity import DeviceInfo
 import json
 from .data import Data
 from .const import (
-    HOT_WATER_CONFIG,
-    HOT_WATER_DEFAULT_CONFIG,
+    CONF_REGION,
+    DATA,
+    DOMAIN,
     TEMP_DEFAULT,
     TEMP_FIVE_MOST_EXPENSIVE,
     TEMP_IS_FALLING,
@@ -22,9 +23,11 @@ from .const import (
     TEMP_LOW_PRICE,
     TEMP_NOT_CHEAP_NOT_EXPENSIVE,
     TEMP_MINIMUM,
-    EVENT_CHECKED_STUFF,
+    HOT_WATER_CONFIG,
+    HOT_WATER_DEFAULT_CONFIG,
     EVENT_NEW_DATA,
     EVENT_NEW_HOUR,
+    EVENT_CHECKED_STUFF,
     API_DATA_LOADED,
     DOMAIN,
     DATA,
@@ -135,8 +138,8 @@ class VVBSensor(SensorEntity):
             is_low_price = current_hour['is_low_price']
             temp_correction_down = float(current_hour['temperature_correction']) < 0
             is_five_most_expensive = current_hour['is_five_most_expensive'] is True
-            is_five_cheapest = current_hour['is_five_cheapest'] is True
-            is_ten_cheapest = current_hour['is_ten_cheapest'] is True
+            is_five_cheapest = current_hour.get("is_five_cheapest", False)
+            is_ten_cheapest = current_hour.get("is_ten_cheapest", False)
             is_min_price = current_hour['is_min'] is True
 
             max = self._data._max_tomorrow if is_tomorrow else self._data._max
@@ -201,7 +204,7 @@ class VVBSensor(SensorEntity):
 
     def get_config_key(self, key=TEMP_DEFAULT):
         # First check if we have individual config fields (new format)
-        individual_key_map = {
+        config_key_to_field = {
             TEMP_DEFAULT: 'temp_default',
             TEMP_FIVE_MOST_EXPENSIVE: 'temp_five_most_expensive',
             TEMP_IS_FALLING: 'temp_is_falling',
@@ -213,8 +216,8 @@ class VVBSensor(SensorEntity):
         }
         
         # Check if we have the individual field (new format)
-        if key in individual_key_map:
-            individual_key = individual_key_map[key]
+        if key in config_key_to_field:
+            individual_key = config_key_to_field[key]
             if individual_key in self._config:
                 return self._config[individual_key]
         
@@ -338,8 +341,10 @@ class PriceAnalyzerSensor(SensorEntity):
         "raw_tomorrow", 
         "ten_cheapest_today",
         "five_cheapest_today",
+        "two_cheapest_today",
         "ten_cheapest_tomorrow",
         "five_cheapest_tomorrow",
+        "two_cheapest_tomorrow",
         "current_hour"
     })
 
@@ -404,8 +409,10 @@ class PriceAnalyzerSensor(SensorEntity):
             "raw_tomorrow": self._data.tomorrow_calculated,
             "ten_cheapest_today": self._data._ten_cheapest_today,
             "five_cheapest_today": self._data._five_cheapest_today,
+            "two_cheapest_today": self._data._two_cheapest_today,
             "ten_cheapest_tomorrow": self._data._ten_cheapest_tomorrow,
-            "five_cheapest_tomorrow": self._data._ten_cheapest_tomorrow,
+            "five_cheapest_tomorrow": self._data._five_cheapest_tomorrow,
+            "two_cheapest_tomorrow": self._data._two_cheapest_tomorrow,
         }
 
 
