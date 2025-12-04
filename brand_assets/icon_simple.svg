@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simplified icon for better small-size recognition -->
+  
+  <!-- Background -->
+  <rect width="512" height="512" fill="transparent"/>
+  
+  <!-- Circular background -->
+  <circle cx="256" cy="256" r="220" fill="#18BCF2"/>
+  
+  <!-- Chart bars with gradient -->
+  <defs>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#66BB6A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#43A047;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="yellowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FDD835;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FBC02D;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#EF5350;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E53935;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Price chart bars -->
+  <rect x="120" y="300" width="60" height="120" rx="10" fill="url(#greenGrad)"/>
+  <rect x="200" y="240" width="60" height="180" rx="10" fill="url(#yellowGrad)"/>
+  <rect x="280" y="180" width="60" height="240" rx="10" fill="url(#redGrad)"/>
+  
+  <!-- Lightning bolt for energy -->
+  <path d="M 380 120 L 340 240 L 380 240 L 360 360 L 440 200 L 395 200 L 420 120 Z" 
+        fill="#FFD700" 
+        stroke="#FFFFFF" 
+        stroke-width="6"
+        stroke-linejoin="round"/>
+  
+  <!-- Trend line overlay -->
+  <path d="M 150 350 Q 230 270 310 220" 
+        stroke="#FFFFFF" 
+        stroke-width="5" 
+        stroke-linecap="round"
+        fill="none"
+        opacity="0.6"/>
+</svg>

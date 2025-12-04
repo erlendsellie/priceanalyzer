@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="#18BCF2" opacity="0.1"/>
+  
+  <!-- Main chart bars representing price analysis -->
+  <g id="chart">
+    <!-- Bar 1 - Low -->
+    <rect x="80" y="280" width="50" height="120" rx="8" fill="#4CAF50"/>
+    <!-- Bar 2 - Medium -->
+    <rect x="150" y="220" width="50" height="180" rx="8" fill="#FFC107"/>
+    <!-- Bar 3 - High -->
+    <rect x="220" y="160" width="50" height="240" rx="8" fill="#F44336"/>
+    <!-- Bar 4 - Low -->
+    <rect x="290" y="260" width="50" height="140" rx="8" fill="#4CAF50"/>
+  </g>
+  
+  <!-- Lightning bolt representing energy/electricity -->
+  <g id="lightning" transform="translate(310, 80)">
+    <path d="M 60 0 L 20 100 L 50 100 L 30 180 L 100 60 L 65 60 L 85 0 Z" 
+          fill="#FFD700" 
+          stroke="#FFA500" 
+          stroke-width="4"
+          stroke-linejoin="round"/>
+  </g>
+  
+  <!-- Price tag symbol -->
+  <g id="price-tag" transform="translate(70, 100)">
+    <path d="M 0 30 L 30 0 L 80 0 L 80 50 L 30 100 L 0 70 Z" 
+          fill="#2196F3" 
+          opacity="0.9"
+          stroke="#1976D2" 
+          stroke-width="3"/>
+    <circle cx="60" cy="25" r="8" fill="#FFF"/>
+  </g>
+  
+  <!-- Subtle background gradient -->
+  <defs>
+    <radialGradient id="bgGradient" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#18BCF2;stop-opacity:0.05" />
+    </radialGradient>
+  </defs>
+  <circle cx="256" cy="256" r="250" fill="url(#bgGradient)"/>
+</svg>
