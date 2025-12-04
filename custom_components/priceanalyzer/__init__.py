@@ -354,7 +354,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 await hass.config_entries.async_forward_entry_setup(entry, platform)
         
         # Add update listener only after successful setup
-        entry.add_update_listener(async_reload_entry)
+        # Use async_on_unload to ensure the listener is removed when entry is unloaded
+        entry.async_on_unload(entry.add_update_listener(async_reload_entry))
         
         _LOGGER.debug("Successfully set up priceanalyzer entry: %s", entry.entry_id)
         return True
@@ -415,5 +416,6 @@ async def async_remove_config_entry_device(
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
+    # Use HA's built-in reload mechanism which handles serialization
+    # and prevents race conditions with concurrent reloads
+    await hass.config_entries.async_reload(entry.entry_id)

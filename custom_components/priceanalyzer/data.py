@@ -387,7 +387,7 @@ class Data():
 
     def price_percent_to_average(self, item, is_tomorrow) -> float:
         """Price in percent to average price"""
-        average = self._average if is_tomorrow else self._average_tomorrow
+        average = self._average_tomorrow if is_tomorrow else self._average
         if average is None:
             return None
 
@@ -416,6 +416,11 @@ class Data():
         percent_difference = (self.percent_difference + 100) / 100
 
         max_price = self._max_tomorrow if is_tomorrow else self._max
+        # Handle case where max_price is None (no data available)
+        if max_price is None:
+            if reason:
+                return 'No price data available'
+            return 0
         threshold = self._config.get('pa_price_before_active', "") or 0
         below_threshold = float(threshold) > max_price
         if below_threshold == True:
@@ -424,7 +429,7 @@ class Data():
             return 0
 
         # TODO this calculation is not considering additional costs.
-        if (diff < percent_difference):
+        if diff is not None and (diff < percent_difference):
             if reason:
                 return 'Small difference'
             return 0
@@ -578,16 +583,17 @@ class Data():
             for i in data
         ]
 
-        offpeak1 = formatted_prices[0:8]
-        peak = formatted_prices[9:17]
-        offpeak2 = formatted_prices[20:]
+        offpeak1 = [p for p in formatted_prices[0:8] if p is not None]
+        peak = [p for p in formatted_prices[8:20] if p is not None]
+        offpeak2 = [p for p in formatted_prices[20:] if p is not None]
+        valid_prices = [p for p in formatted_prices if p is not None]
 
-        self._peak = mean(peak)
-        self._off_peak_1 = mean(offpeak1)
-        self._off_peak_2 = mean(offpeak2)
-        self._average = mean(formatted_prices)
-        self._min = min(formatted_prices)
-        self._max = max(formatted_prices)
+        self._peak = mean(peak) if peak else None
+        self._off_peak_1 = mean(offpeak1) if offpeak1 else None
+        self._off_peak_2 = mean(offpeak2) if offpeak2 else None
+        self._average = mean(valid_prices) if valid_prices else None
+        self._min = min(valid_prices) if valid_prices else None
+        self._max = max(valid_prices) if valid_prices else None
         self._add_raw_calculated(False)
 
     def _update_tomorrow(self, data) -> None:
@@ -622,16 +628,17 @@ class Data():
                 for i in data
             ]
 
-            if len(formatted_prices) and formatted_prices[0] is not None:
-                offpeak1 = formatted_prices[0:8]
-                peak = formatted_prices[9:17]
-                offpeak2 = formatted_prices[20:]
-                self._peak_tomorrow = mean(peak)
-                self._off_peak_1_tomorrow = mean(offpeak1)
-                self._off_peak_2_tomorrow = mean(offpeak2)
-                self._average_tomorrow = mean(formatted_prices)
-                self._min_tomorrow = min(formatted_prices)
-                self._max_tomorrow = max(formatted_prices)
+            valid_prices = [p for p in formatted_prices if p is not None]
+            if valid_prices:
+                offpeak1 = [p for p in formatted_prices[0:8] if p is not None]
+                peak = [p for p in formatted_prices[8:20] if p is not None]
+                offpeak2 = [p for p in formatted_prices[20:] if p is not None]
+                self._peak_tomorrow = mean(peak) if peak else None
+                self._off_peak_1_tomorrow = mean(offpeak1) if offpeak1 else None
+                self._off_peak_2_tomorrow = mean(offpeak2) if offpeak2 else None
+                self._average_tomorrow = mean(valid_prices)
+                self._min_tomorrow = min(valid_prices)
+                self._max_tomorrow = max(valid_prices)
                 self._add_raw_calculated(True)
                 # Reevaluate Today, when tomorrows prices are available
                 self._add_raw_calculated(False)
@@ -719,11 +726,11 @@ class Data():
 
             price_now = float(self._calc_price(
                 res["value"], fake_dt=res["start"]))
-            is_max = price_now == max_price
-            is_min = price_now == min_price
-            is_low_price = price_now < average * self._low_price_cutoff
-            is_over_peak = price_now > peak
-            is_over_average = price_now > average
+            is_max = price_now == max_price if max_price is not None else False
+            is_min = price_now == min_price if min_price is not None else False
+            is_low_price = (price_now < average * self._low_price_cutoff) if average is not None else False
+            is_over_peak = (price_now > peak) if peak is not None else False
+            is_over_average = (price_now > average) if average is not None else False
 
             next_hour = self.get_hour(hour+1, is_tomorrow)
             next_hour2 = self.get_hour(hour+2, is_tomorrow)
@@ -745,6 +752,7 @@ class Data():
                 is_gaining = None
                 is_falling = None
                 price_next_hour = None
+                price_next_hour2 = None
 
             item = {
                 "start": res["start"],

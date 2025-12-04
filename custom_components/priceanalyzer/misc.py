@@ -124,20 +124,20 @@ def has_junk(data) -> bool:
 def extract_attrs(data) -> dict:
     """extract attrs"""
     d = defaultdict(list)
-    items = [i.get("value") for i in data]
+    items = [i.get("value") for i in data if i.get("value") is not None]
 
     if len(data):
         data = sorted(data, key=itemgetter("start"))
-        offpeak1 = [i.get("value") for i in data[0:8]]
-        peak = [i.get("value") for i in data[8:20]]
-        offpeak2 = [i.get("value") for i in data[20:]]
+        offpeak1 = [i.get("value") for i in data[0:8] if i.get("value") is not None]
+        peak = [i.get("value") for i in data[8:20] if i.get("value") is not None]
+        offpeak2 = [i.get("value") for i in data[20:] if i.get("value") is not None]
 
-        d["Peak"] = mean(peak)
-        d["Off-peak 1"] = mean(offpeak1)
-        d["Off-peak 2"] = mean(offpeak2)
-        d["Average"] = mean(items)
-        d["Min"] = min(items)
-        d["Max"] = max(items)
+        d["Peak"] = mean(peak) if peak else float("inf")
+        d["Off-peak 1"] = mean(offpeak1) if offpeak1 else float("inf")
+        d["Off-peak 2"] = mean(offpeak2) if offpeak2 else float("inf")
+        d["Average"] = mean(items) if items else float("inf")
+        d["Min"] = min(items) if items else float("inf")
+        d["Max"] = max(items) if items else float("inf")
 
         return d
 
