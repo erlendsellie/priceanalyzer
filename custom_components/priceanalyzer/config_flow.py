@@ -177,7 +177,7 @@ class Base:
 class PriceAnalyzerFlowHandler(Base, config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for PriceAnalyzer."""
 
-    VERSION = "1.0"
+    VERSION = 1
 
     def __init__(self):
         """Initialize."""
