@@ -330,7 +330,6 @@ class VVBSensor(SensorEntity):
         async_dispatcher_connect(self._data.api._hass, EVENT_NEW_HOUR, self._data.new_hr)
         async_dispatcher_connect(self._data.api._hass, API_DATA_LOADED, self._data.check_stuff)
         async_dispatcher_connect(self._data.api._hass, EVENT_CHECKED_STUFF, self.update_sensor)
-        await self._data.check_stuff()
 
 class PriceAnalyzerSensor(SensorEntity):
     _attr_device_class = SensorDeviceClass.TEMPERATURE
@@ -438,7 +437,6 @@ class PriceAnalyzerSensor(SensorEntity):
         async_dispatcher_connect(self._data.api._hass, EVENT_NEW_HOUR, self._data.new_hr)
         async_dispatcher_connect(self._data.api._hass, API_DATA_LOADED, self._data.check_stuff)
         async_dispatcher_connect(self._data.api._hass, EVENT_CHECKED_STUFF, self.update_sensor)
-        await self._data.check_stuff()
 
 
 class PriceSensor(SensorEntity):
@@ -518,4 +516,3 @@ class PriceSensor(SensorEntity):
         async_dispatcher_connect(self._data.api._hass, EVENT_NEW_HOUR, self._data.new_hr)
         async_dispatcher_connect(self._data.api._hass, API_DATA_LOADED, self._data.check_stuff)
         async_dispatcher_connect(self._data.api._hass, EVENT_CHECKED_STUFF, self.update_sensor)
-        await self._data.check_stuff()

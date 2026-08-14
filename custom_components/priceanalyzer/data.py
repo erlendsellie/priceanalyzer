@@ -151,6 +151,7 @@ class Data():
 
         # To control the updates.
         self._last_tick = None
+        self._update_lock = asyncio.Lock()
         self._cbs = []
 
     @property
@@ -959,6 +960,11 @@ class Data():
             _LOGGER.error("API call failed for %s: %s", api_method.__name__, str(e))
             return None
 
+    async def check_stuff(self) -> None:
+        """Serialize price updates."""
+        async with self._update_lock:
+            await self._check_stuff()
+
     @backoff.on_exception(
         backoff.expo,
         (aiohttp.ClientError, asyncio.TimeoutError, OSError, Exception),
@@ -975,7 +981,7 @@ class Data():
             details['tries'], details.get('elapsed', 'unknown'),
             getattr(details.get('args', [None])[0], '_area', 'unknown'), details['exception']
         ))
-    async def check_stuff(self) -> None:
+    async def _check_stuff(self) -> None:
         """Cb to do some house keeping, called every hour to get the current hours price"""
         _LOGGER.debug("called check_stuff for region %s", self._area)
         start_time = dt_utils.now()

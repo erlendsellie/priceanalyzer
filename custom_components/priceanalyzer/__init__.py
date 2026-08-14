@@ -352,6 +352,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             # HA 2024.x and older - use singular version
             for platform in PLATFORMS:
                 await hass.config_entries.async_forward_entry_setup(entry, platform)
+
+        data = hass.data[DATA][entry.entry_id]
+        entry.async_create_background_task(
+            hass,
+            data.check_stuff(),
+            f"priceanalyzer initial update {entry.entry_id}",
+        )
         
         # Add update listener only after successful setup
         # Use async_on_unload to ensure the listener is removed when entry is unloaded
