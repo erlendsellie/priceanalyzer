@@ -330,8 +330,12 @@ async def async_setup(hass: HomeAssistant, config: Config) -> bool:
     return True
     return await _dry_setup(hass, config)
 
-async def async_migrate_entry(title, domain) -> bool:
-    #sorry, we dont support migrate
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Convert config flow versions stored as strings by older releases."""
+    if isinstance(entry.version, str):
+        hass.config_entries.async_update_entry(
+            entry, version=int(float(entry.version))
+        )
     return True
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

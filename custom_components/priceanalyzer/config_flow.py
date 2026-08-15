@@ -34,6 +34,15 @@ placeholders = {
 _LOGGER = logging.getLogger(__name__)
 
 
+class _ConfigFlowVersion(int):
+    """Compare with legacy string versions long enough to migrate them."""
+
+    def __lt__(self, other):
+        if isinstance(other, str):
+            return int(self) < int(float(other))
+        return super().__lt__(other)
+
+
 def _migrate_hot_water_config(existing_config):
     """Migrate existing JSON hot water config to individual fields"""
     if existing_config is None:
@@ -177,7 +186,7 @@ class Base:
 class PriceAnalyzerFlowHandler(Base, config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for PriceAnalyzer."""
 
-    VERSION = 1
+    VERSION = _ConfigFlowVersion(1)
 
     def __init__(self):
         """Initialize."""
